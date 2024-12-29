@@ -3,11 +3,16 @@
 
   # Flake inputs
   inputs = {
-    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.2405.*.tar.gz";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    nixpkgs-stable.url = "github:nixos/nixpkgs/release-24.11";
   };
 
   # Flake outputs
-  outputs = { self, nixpkgs }:
+  outputs = { 
+    self,     
+    nixpkgs-unstable,
+    nixpkgs-stable
+  }:
     let
       # Systems supported
       allSystems = [
@@ -18,8 +23,8 @@
       ];
 
       # Helper to provide system-specific attributes
-      forAllSystems = f: nixpkgs.lib.genAttrs allSystems (system: f {
-        pkgs = import nixpkgs { inherit system; };
+      forAllSystems = f: nixpkgs-stable.lib.genAttrs allSystems (system: f {
+        pkgs = import nixpkgs-stable { inherit system; };
       });
     in
     {
@@ -27,8 +32,8 @@
       devShells = forAllSystems ({ pkgs }: {
         default =
           let
-            # Use Python 3.11
-            python = pkgs.python311;
+            # Use Python 3.13
+            python = pkgs.python313;
           in
           pkgs.mkShell {
             # The Nix packages provided in the environment
@@ -41,7 +46,7 @@
             ];
             shellHook = ''
               echo "🐍 You're entering our dev environment! 🐍"
-              source python-venv/bin/activate
+              source python-nix-venv/bin/activate
             '';
           };
       });
