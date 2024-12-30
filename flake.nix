@@ -1,5 +1,5 @@
 {
-  description = "Example Python development environment from Zero to Nix";
+  description = "Python devShell Flake";
 
   # Flake inputs
   inputs = {
@@ -17,7 +17,6 @@
         with pkgs;
         {
           devShells.default = mkShell {
-            # 👇 we can just use `rustToolchain` here:
              buildInputs = (with pkgs.python313Packages; [
                 virtualenv
                 pip
